@@ -19,7 +19,7 @@ Ensure you have Node.js installed on your system to run TypeScript files. You ca
 1. Clone the repository:
 
    ```
-   git clone https://your-repository-url.git
+   git clone https://github.com/adamalmqvist/vector-database.git
    cd vector-database
    ```
 

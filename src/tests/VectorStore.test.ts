@@ -52,4 +52,16 @@ describe("VectorStore", () => {
     const result = store.findSimilarVectors(vector3);
     expect(result[0]).toEqual({ id: "vector3", similarity: 1 });
   });
+
+  test("findSimilarVectors handles k value correctly", () => {
+    const vector1 = [1, 2, 3];
+    const vector2 = [1, 3, 3];
+    const vector3 = [1, 2, 6];
+    store.addVector("vector1", vector1);
+    store.addVector("vector2", vector2);
+    store.addVector("vector3", vector3);
+
+    const result = store.findSimilarVectors(vector3, 1);
+    expect(result.length).toBe(1);
+  });
 });

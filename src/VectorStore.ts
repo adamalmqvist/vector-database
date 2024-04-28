@@ -64,7 +64,7 @@ class VectorStore {
       return b.similarity - a.similarity;
     });
 
-    return results;
+    return results.slice(0, k);
   }
 }
 export default VectorStore;

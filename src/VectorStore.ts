@@ -52,11 +52,11 @@ class VectorStore {
 
   findSimilarVectors(query: number[], k = 5) {
     const results = [];
-    for (const key in this.vectorData) {
-      const { vector } = this.vectorData[key];
+    for (const id in this.vectorData) {
+      const { vector } = this.vectorData[id];
       const similarity = this.calculateCosineSimilarity(query, vector);
       results.push({
-        id: key,
+        id,
         similarity,
       });
     }

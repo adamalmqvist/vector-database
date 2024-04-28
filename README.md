@@ -1,6 +1,6 @@
 # vector-database
 
-a super simple vector database in TypeScript without any packages (exept Jest for testing). It efficiently manages and retrieves vectors, featuring a straightforward cosine similarity search function for finding similar vectors in your database.
+a super simple vector database in TypeScript without any packages (exept Jest for testing). It efficiently manages and retrieves vectors, featuring a cosine similarity search function for finding similar vectors in your database.
 
 ## Features
 

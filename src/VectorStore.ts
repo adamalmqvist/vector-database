@@ -1,8 +1,12 @@
 import * as fs from "fs";
 
+type Metadata = {
+  [key: string]: string | number | boolean | object;
+};
+
 type VectorObject = {
   vector: number[];
-  metaData: any;
+  metadata: Metadata;
 };
 
 class VectorStore {
@@ -20,9 +24,9 @@ class VectorStore {
     return obj;
   }
 
-  addVector(vectorId: string | number, vector: number[], metaData?: any): void {
+  addVector(vectorId: string | number, vector: number[], metadata?: any): void {
     const data = { ...this.vectorData };
-    data[vectorId] = { vector, metaData };
+    data[vectorId] = { vector, metadata };
     fs.writeFileSync(
       __dirname + "/vectorData.json",
       JSON.stringify(data, null, 2)
@@ -50,21 +54,47 @@ class VectorStore {
     return dotProduct / (normVec1 * normVec2);
   }
 
-  findSimilarVectors(query: number[], k = 5) {
+  isVectorPassingMetadataFilter(
+    item: VectorObject,
+    criteria?: Partial<Metadata>
+  ) {
+    if (!criteria) {
+      return true;
+    }
+    return Object.entries(criteria).every(
+      ([key, value]) => item.metadata[key] === value
+    );
+  }
+
+  findSimilarVectors(
+    query: number[],
+    k = 5,
+    metadataFilter?: Partial<Metadata>
+  ) {
     const results = [];
     for (const id in this.vectorData) {
-      const { vector } = this.vectorData[id];
-      const similarity = this.calculateCosineSimilarity(query, vector);
-      results.push({
-        id,
-        similarity,
-      });
+      const item = this.getVector(id);
+      if (item) {
+        const { vector } = item;
+        const similarity = this.calculateCosineSimilarity(query, vector);
+        results.push({
+          id,
+          similarity,
+        });
+      }
     }
     results.sort((a, b) => {
       return b.similarity - a.similarity;
     });
 
-    return results.slice(0, k);
+    return results
+      .filter((item) => {
+        const vector = this.getVector(item.id);
+        if (vector) {
+          return this.isVectorPassingMetadataFilter(vector, metadataFilter);
+        }
+      })
+      .slice(0, k);
   }
 }
 export default VectorStore;

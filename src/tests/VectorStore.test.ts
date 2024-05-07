@@ -28,12 +28,12 @@ describe("VectorStore", () => {
   it("Handles metadata correctly when adding vectores", () => {
     const vectorId = "vec1";
     const vector = [1, 2, 3];
-    const metaData = {
+    const metadata = {
       id: "testid",
       orginalText: "This is some original text for a test",
     };
-    store.addVector(vectorId, vector, metaData);
-    expect(store.getVector(vectorId)).toEqual({ vector, metaData });
+    store.addVector(vectorId, vector, metadata);
+    expect(store.getVector(vectorId)).toEqual({ vector, metadata });
   });
 
   test("Two vectors that are exactly the same should have the similarity of 1", () => {
@@ -79,6 +79,30 @@ describe("VectorStore", () => {
 
     const result = store.findSimilarVectors(highway.vector, 1);
     const vectorData = store.getVector(result[0].id);
-    expect(vectorData?.metaData.orginalText).toBe("car");
+    expect(vectorData?.metadata.orginalText).toBe("car");
+  });
+
+  test("findSimilarVectors handles metadata filtering", () => {
+    store.addVector("dogVectorId", dog.vector, {
+      orginalText: dog.orginalText,
+    });
+    store.addVector("catVectorId", cat.vector, {
+      orginalText: cat.orginalText,
+    });
+    store.addVector("carVectorId", car.vector, {
+      orginalText: car.orginalText,
+      color: "red",
+    });
+
+    const result = store.findSimilarVectors(highway.vector, 1, {
+      color: "red",
+    });
+    const vectorData = store.getVector(result[0].id);
+    expect(vectorData?.metadata.orginalText).toBe("car");
+
+    const result2 = store.findSimilarVectors(highway.vector, 1, {
+      color: "greem",
+    });
+    expect(result2.length).toBe(0);
   });
 });

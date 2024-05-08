@@ -83,18 +83,21 @@ class VectorStore {
         });
       }
     }
-    results.sort((a, b) => {
+
+    const filteredResults = results.filter((item) => {
+      const vector = this.getVector(item.id);
+      if (vector) {
+        return this.isVectorPassingMetadataFilter(vector, metadataFilter);
+      }
+    });
+
+    const sortedResults = filteredResults.sort((a, b) => {
       return b.similarity - a.similarity;
     });
 
-    return results
-      .filter((item) => {
-        const vector = this.getVector(item.id);
-        if (vector) {
-          return this.isVectorPassingMetadataFilter(vector, metadataFilter);
-        }
-      })
-      .slice(0, k);
+    const topKResults = sortedResults.slice(0, k);
+
+    return topKResults;
   }
 }
 export default VectorStore;

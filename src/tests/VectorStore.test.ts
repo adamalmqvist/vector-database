@@ -94,15 +94,34 @@ describe("VectorStore", () => {
       color: "red",
     });
 
-    const result = store.findSimilarVectors(highway.vector, 1, {
+    const result = store.findSimilarVectors(highway.vector, 1, 0, {
       color: "red",
     });
     const vectorData = store.getVector(result[0].id);
     expect(vectorData?.metadata.orginalText).toBe("car");
 
-    const result2 = store.findSimilarVectors(highway.vector, 1, {
+    const result2 = store.findSimilarVectors(highway.vector, 1, 0, {
       color: "greem",
     });
+    expect(result2.length).toBe(0);
+  });
+
+  test("findSimilarVectors handles min minSimilarity", () => {
+    store.addVector("dogVectorId", dog.vector, {
+      orginalText: dog.orginalText,
+    });
+    store.addVector("catVectorId", cat.vector, {
+      orginalText: cat.orginalText,
+    });
+    store.addVector("carVectorId", car.vector, {
+      orginalText: car.orginalText,
+      color: "red",
+    });
+
+    const result = store.findSimilarVectors(car.vector, 5, 0.9);
+    expect(result.length).toBe(1);
+
+    const result2 = store.findSimilarVectors(highway.vector, 5, 0.5);
     expect(result2.length).toBe(0);
   });
 });

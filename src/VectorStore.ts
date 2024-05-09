@@ -69,6 +69,7 @@ class VectorStore {
   findSimilarVectors(
     query: number[],
     k = 5,
+    minSimilarity = 0,
     metadataFilter?: Partial<Metadata>
   ) {
     const results = [];
@@ -83,11 +84,13 @@ class VectorStore {
         });
       }
     }
-
     const filteredResults = results.filter((item) => {
       const vector = this.getVector(item.id);
       if (vector) {
-        return this.isVectorPassingMetadataFilter(vector, metadataFilter);
+        return (
+          this.isVectorPassingMetadataFilter(vector, metadataFilter) &&
+          item.similarity >= minSimilarity
+        );
       }
     });
 
